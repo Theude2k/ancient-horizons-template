@@ -25,28 +25,36 @@ jobs:
             -d '{
               "model": "gpt-4o",
               "messages": [
-                { "role": "system", "content": "You are a code generator. Only output Git diffs. Always wrap them in triple backticks and diff tags." },
-                { "role": "user", "content": "'"${REQUEST//\"/\\\"}"'" }
+                {
+                  "role": "system",
+                  "content": "You are a code generator. Given this repository and the user’s request, produce a Git diff *only*, with no explanations. Always wrap the diff in triple backticks and diff tags."
+                },
+                {
+                  "role": "user",
+                  "content": "'"$REQUEST"'"
+                }
               ]
             }' | jq -r '.choices[0].message.content')
 
           echo "$RESPONSE" > patch.diff
-          echo "response=$RESPONSE" >> $GITHUB_OUTPUT
+          echo "response<<EOF" >> $GITHUB_OUTPUT
+          echo "$RESPONSE" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Apply patch
-        run: git apply patch.diff || echo "No changes to apply"
+        run: |
+          git apply patch.diff || echo "No changes to apply"
 
-      - name: Commit & Push Changes
+      - name: Commit & Push changes
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git checkout -b "feat-${{ github.event.issue.number }}" || git checkout -B "feat-${{ github.event.issue.number }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b ask-${{ github.event.issue.number }}
           git add .
-          git diff --cached --exit-code && echo "Nothing to commit" && exit 0
-          git commit -m "feat: ${{ github.event.comment.body }}"
-          git push -u origin HEAD
+          git commit -m "feat: ${{ github.event.comment.body }}" || echo "Nothing to commit"
+          git push -u origin HEAD || echo "Nothing to push"
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
