@@ -15,7 +15,7 @@ jobs:
 
       - name: Call OpenAI for diff
         id: openai
-        uses: peter-evans/openai-api-action@v1
+        uses: m4bzie/openai-api-action@main
         with:
           openai_api_key: ${{ secrets.OPENAI_API_KEY }}
           model: gpt-4o-mini
