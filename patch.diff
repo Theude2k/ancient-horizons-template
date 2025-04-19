@@ -1,92 +1,59 @@
 ```diff
-diff --git a/public/index.html b/public/index.html
-new file mode 100644
-index 0000000..4e21f00
---- /dev/null
-+++ b/public/index.html
-@@ -0,0 +1,10 @@
-+<!DOCTYPE html>
-+<html lang="en">
-+<head>
-+    <meta charset="UTF-8">
-+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-+    <title>React Game Board</title>
-+</head>
-+<body>
-+    <div id="root"></div>
-+</body>
-+</html>
 diff --git a/src/components/Board.tsx b/src/components/Board.tsx
 new file mode 100644
-index 0000000..87cee20
+index 0000000..cdef123
 --- /dev/null
 +++ b/src/components/Board.tsx
-@@ -0,0 +1,52 @@
-+import React, { useState } from 'react';
+@@ -0,0 +1,27 @@
++import React from 'react';
 +
-+const Board: React.FC = () => {
-+  const [clickedTiles, setClickedTiles] = useState<Set<string>>(new Set());
++type SquareValue = 'X' | 'O' | null;
 +
-+  const handleTileClick = (row: number, col: number) => {
-+    const tileId = `${row}-${col}`;
-+    setClickedTiles(prevClicked => {
-+      const newClicked = new Set(prevClicked);
-+      if (newClicked.has(tileId)) {
-+        newClicked.delete(tileId);
-+      } else {
-+        newClicked.add(tileId);
-+      }
-+      return newClicked;
-+    });
-+  };
++interface BoardProps {
++  squares: SquareValue[];
++  onClick: (i: number) => void;
++}
 +
-+  const renderTile = (row: number, col: number) => {
-+    const tileId = `${row}-${col}`;
-+    const isActive = clickedTiles.has(tileId);
-+    const tileStyle: React.CSSProperties = {
-+      width: '40px',
-+      height: '40px',
-+      display: 'inline-block',
-+      margin: '2px',
-+      backgroundColor: isActive ? 'lightblue' : 'lightgray',
-+      border: '1px solid black',
-+      cursor: 'pointer'
-+    };
-+    return (
-+      <div key={tileId}
-+           style={tileStyle}
-+           onClick={() => handleTileClick(row, col)}>
-+      </div>
-+    );
-+  };
++const Board: React.FC<BoardProps> = ({ squares, onClick }) => {
++  const renderSquare = (i: number) => (
++    <button className="square" onClick={() => onClick(i)}>
++      {squares[i]}
++    </button>
++  );
 +
 +  return (
 +    <div>
-+      {Array.from({ length: 5 }).map((_, row) => (
-+        <div key={row}>
-+          {Array.from({ length: 5 }).map((_, col) => renderTile(row, col))}
-+        </div>
-+      ))}
++      <div className="board-row">
++        {renderSquare(0)}
++        {renderSquare(1)}
++        {renderSquare(2)}
++      </div>
++      <div className="board-row">
++        {renderSquare(3)}
++        {renderSquare(4)}
++        {renderSquare(5)}
++      </div>
++      <div className="board-row">
++        {renderSquare(6)}
++        {renderSquare(7)}
++        {renderSquare(8)}
++      </div>
 +    </div>
 +  );
 +};
 +
 +export default Board;
-diff --git a/src/index.tsx b/src/index.tsx
-new file mode 100644
-index 0000000..cf4b3c2
---- /dev/null
-+++ b/src/index.tsx
-@@ -0,0 +1,10 @@
-+import React from 'react';
-+import ReactDOM from 'react-dom';
-+import Board from './components/Board';
-+
-+const rootElement = document.getElementById('root');
-+ReactDOM.render(
-+  <React.StrictMode>
-+    <Board />
-+  </React.StrictMode>,
-+  rootElement
-+);
+diff --git a/public/index.html b/public/index.html
+index d2c7ef4..ab94e23 100644
+--- a/public/index.html
++++ b/public/index.html
+@@ -4,7 +4,7 @@
+     <title>React App</title>
+   </head>
+   <body>
+-    <div id="root"></div>
++    <div id="root">Loading...</div>
+     <script src="../src/index.tsx"></script>
+   </body>
+ </html>
 ```
