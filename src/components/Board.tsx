@@ -10,7 +10,6 @@ export default function Board() {
       </div>
 
       {/* 🌄 Game Content */}
-      <h1 style={{ color: 'white', padding: '20px' }}>Game Board Loaded</h1>
-    </div>
+          </div>
   );
 }
