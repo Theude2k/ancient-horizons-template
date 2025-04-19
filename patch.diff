@@ -1,59 +1,60 @@
 ```diff
 diff --git a/src/components/Board.tsx b/src/components/Board.tsx
 new file mode 100644
-index 0000000..cdef123
+index 0000000..b1e2d3f
 --- /dev/null
 +++ b/src/components/Board.tsx
-@@ -0,0 +1,27 @@
-+import React from 'react';
+@@ -0,0 +1,37 @@
++import React, { useState } from 'react';
 +
-+type SquareValue = 'X' | 'O' | null;
-+
-+interface BoardProps {
-+  squares: SquareValue[];
-+  onClick: (i: number) => void;
-+}
-+
-+const Board: React.FC<BoardProps> = ({ squares, onClick }) => {
-+  const renderSquare = (i: number) => (
-+    <button className="square" onClick={() => onClick(i)}>
-+      {squares[i]}
-+    </button>
++const Board: React.FC = () => {
++  const [selected, setSelected] = useState<boolean[][]>(
++    Array.from({ length: 6 }, () => Array(6).fill(false))
 +  );
 +
++  const handleClick = (row: number, col: number) => {
++    const newSelected = selected.map((rowArr, rowIndex) =>
++      rowArr.map((cell, colIndex) =>
++        rowIndex === row && colIndex === col ? !cell : cell
++      )
++    );
++    setSelected(newSelected);
++  };
++
 +  return (
-+    <div>
-+      <div className="board-row">
-+        {renderSquare(0)}
-+        {renderSquare(1)}
-+        {renderSquare(2)}
-+      </div>
-+      <div className="board-row">
-+        {renderSquare(3)}
-+        {renderSquare(4)}
-+        {renderSquare(5)}
-+      </div>
-+      <div className="board-row">
-+        {renderSquare(6)}
-+        {renderSquare(7)}
-+        {renderSquare(8)}
-+      </div>
++    <div className="grid grid-cols-6 gap-2">
++      {selected.map((row, rowIndex) =>
++        row.map((isSelected, colIndex) => (
++          <div
++            key={`${rowIndex}-${colIndex}`}
++            onClick={() => handleClick(rowIndex, colIndex)}
++            className={`w-16 h-16 border ${isSelected ? 'bg-blue-500' : 'bg-white'}`}
++          ></div>
++        ))
++      )}
 +    </div>
 +  );
 +};
 +
 +export default Board;
-diff --git a/public/index.html b/public/index.html
-index d2c7ef4..ab94e23 100644
---- a/public/index.html
-+++ b/public/index.html
-@@ -4,7 +4,7 @@
-     <title>React App</title>
-   </head>
-   <body>
--    <div id="root"></div>
-+    <div id="root">Loading...</div>
-     <script src="../src/index.tsx"></script>
-   </body>
- </html>
+diff --git a/src/index.tsx b/src/index.tsx
+index d4f32de..8f34de4 100644
+--- a/src/index.tsx
++++ b/src/index.tsx
+@@ -1,5 +1,9 @@
+ import React from 'react';
+ import ReactDOM from 'react-dom/client';
++import './index.css'; // Assuming Tailwind is imported in index.css
++import Board from './components/Board';
+ 
+ const root = ReactDOM.createRoot(
+   document.getElementById('root') as HTMLElement
+ );
+ 
+-root.render(<React.StrictMode>/* App Components */</React.StrictMode>);
++root.render(
++  <React.StrictMode>
++    <Board />
++  </React.StrictMode>
++);
 ```
